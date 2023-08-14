@@ -14,7 +14,6 @@ export default styles=StyleSheet.create({
     },
     video_detail: {
         flexDirection: 'row',
-        width: '90%',
         padding: 10
     }
 })

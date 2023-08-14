@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 import { formatTimestamp } from '../helper_function/functions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function VideoList({searchdatas, datas, refresh, onRefresh, screen}) {
+export default function VideoList({ searchdatas, datas, refresh, onRefresh, screen }) {
   const navigation = useNavigation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
@@ -25,18 +25,18 @@ export default function VideoList({searchdatas, datas, refresh, onRefresh, scree
     getData();
   }, []);
 
-  const ListEmpty  = () => (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <View style={{marginBottom: 10}}>
+  const ListEmpty = () => (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ marginBottom: 10 }}>
         <Image style={{ width: windowWidth, height: windowHeight * 0.3 }} source={require('../assets/LoadingState.jpg')} />
       </View>
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         <Image style={{ width: windowWidth, height: windowHeight * 0.3 }} source={require('../assets/LoadingState.jpg')} />
       </View>
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         <Image style={{ width: windowWidth, height: windowHeight * 0.3 }} source={require('../assets/LoadingState.jpg')} />
       </View>
-      <View style={{marginBottom: 10}}>
+      <View style={{ marginBottom: 10 }}>
         <Image style={{ width: windowWidth, height: windowHeight * 0.3 }} source={require('../assets/LoadingState.jpg')} />
       </View>
     </View>
@@ -48,17 +48,11 @@ export default function VideoList({searchdatas, datas, refresh, onRefresh, scree
         <Image style={{ width: windowWidth, height: windowHeight * 0.3, resizeMode: 'stretch' }}
           source={{ uri: data.item.Hinh }} />
       </TouchableOpacity>
-      <View style={styles.video_detail}>
+      <View style={{ flexDirection: 'row', padding: 10, marginBottom: 0, justifyContent: 'center' }}>
         <Image style={{ width: 30, height: 30, borderRadius: 100, borderWidth: 1, borderColor: '#edf0ef' }} source={require('../assets/avatar.jpg')} />
-        <View style={{ paddingLeft: 10 }}>
-          <View><Text style={{ fontSize: 17, fontWeight: '600' }}>{data.item.TenVD}</Text></View>
-          <View style={{ flexDirection: 'row' }}>
-            <View><Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{data.item.Username}</Text></View>
-            <View style={{ flexDirection: 'row', marginLeft: 10 }}>
-              <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{data.item.LuotXem} {data.item.LuotXem <= 1 ? 'View' : 'Views'} - </Text>
-              <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{formatTimestamp(data.item.PostTime)}</Text>
-            </View>
-          </View>
+        <View style={{ marginLeft: 10, width: '90%', borderBottomWidth: 1, borderColor: '#edf0ef', paddingBottom: 5 }}>
+          <Text style={{ fontSize: 17, fontWeight: '600' }}>{data.item.TenVD}</Text>
+          <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{data.item.Username} - {data.item.LuotXem} {data.item.LuotXem <= 1 ? 'View' : 'Views'} - {formatTimestamp(data.item.PostTime)}</Text>
         </View>
       </View>
     </View>
@@ -66,8 +60,8 @@ export default function VideoList({searchdatas, datas, refresh, onRefresh, scree
 
   return (
     <View style={{ flex: 1 }}>
-      {screen == 'Home' 
-      ? <FlatList
+      {screen == 'Home'
+        ? <FlatList
           data={searchdatas.length > 0
             ? searchdatas
             : datas
@@ -82,7 +76,7 @@ export default function VideoList({searchdatas, datas, refresh, onRefresh, scree
             />
           }
         />
-      : <FlatList
+        : <FlatList
           data={datas}
           renderItem={renderVideoItems}
           ListEmptyComponent={ListEmpty}

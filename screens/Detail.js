@@ -191,7 +191,7 @@ export default function Detail() {
           <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{route.params.LuotXem} {route.params.LuotXem <= 1 ? 'View' : 'Views'} - {formatTimestamp(route.params.PostTime)}</Text>
           <View style={{ paddingTop: 10, flexDirection: 'row' }}>
           <Image style={{ width: 30, height: 30, borderRadius: 100, borderWidth: 1, borderColor: '#edf0ef' }} source={require('../assets/avatar.jpg')} />
-            <View style={{ paddingLeft: 10 }}><Text style={{ fontWeight: '600', fontSize: 18 }}>{route.params.Username}</Text></View>
+            <View style={{width: '90%', paddingLeft: 10 }}><Text style={{ fontWeight: '600', fontSize: 18 }}>{route.params.Username}</Text></View>
           </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderColor: '#edf0ef' }}>

@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 import { formatTimestamp } from '../helper_function/functions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function VideoList({ searchdatas, datas, refresh, onRefresh, screen }) {
+export default function VideoList({ searchdatas, datas, refresh, onRefresh, screen, ListHeader }) {
   const navigation = useNavigation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
@@ -80,6 +80,7 @@ export default function VideoList({ searchdatas, datas, refresh, onRefresh, scre
           data={datas}
           renderItem={renderVideoItems}
           ListEmptyComponent={ListEmpty}
+          ListHeaderComponent={ListHeader}
           showsVerticalScrollIndicator={false}
         />
       }

@@ -12,7 +12,8 @@ export const GetListDataVideo = async (setDatas, setRefresh, MaVD, screen) => {
       else
       {
         const FilterDatas = jsonResponse.filter((item) => item.MaVD !== MaVD);
-        setDatas(FilterDatas);
+        const Datas = FilterDatas.slice(0, 5);
+        setDatas(Datas);
       }
     } else {
       console.log("Response is empty.");

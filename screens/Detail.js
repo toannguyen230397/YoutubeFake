@@ -24,7 +24,8 @@ export default function Detail() {
   const route = useRoute();
   const [videoLoad, setVidaoLoad] = useState(true);
   const [user, setUser] = useState('');
-
+  const [lastPress, setLastPress] = useState(0);
+  const [moreSpace, setMoreSpace] = useState(false);
 
   const getData = async () => {
     try {
@@ -35,12 +36,23 @@ export default function Detail() {
     }
   };
 
-  const likeHandler = async() => {
-    if(user != '')
-    {
+  const handleDoubleTap = () => {
+    const currentTime = Date.now();
+    const delta = currentTime - lastPress;
+
+    const DOUBLE_PRESS_DELAY = 500; // mức thời gian để xác định press 2 lần liên tục
+    if (delta < DOUBLE_PRESS_DELAY) {
+      setMoreSpace(!moreSpace);
+    }
+
+    setLastPress(currentTime);
+  };
+
+  const likeHandler = async () => {
+    if (user != '') {
       const existingLikeIndex = likedatas.findIndex((data) => data.Username === user);
       const existingDisLikeIndex = disLikedatas.findIndex((data) => data.Username === user);
-      
+
       const newLikeData = {
         "MaTT": Date.now(), // Gán MaTT theo giá trị mong muốn
         "MaVD": route.params.MaVD, // Gán MaVD theo giá trị mong muốn
@@ -57,7 +69,7 @@ export default function Detail() {
           const newData = [...prevDatas, newLikeData];
           return newData;
         });
-        
+
         setDisLikeDatas(prevDatas => {
           const newData = prevDatas.filter(data => data.Username !== user);
           return newData;
@@ -76,18 +88,16 @@ export default function Detail() {
         });
       }
     }
-    else
-    {
+    else {
       ShowToast('error', 'Thông báo', 'Bạn cần đăng nhập để like video này!');
     }
   };
 
-  const disLikeHandler = async() => {
-    if(user != '')
-    {
+  const disLikeHandler = async () => {
+    if (user != '') {
       const existingLikeIndex = likedatas.findIndex((data) => data.Username === user);
       const existingDisLikeIndex = disLikedatas.findIndex((data) => data.Username === user);
-      
+
       const newDisLikeData = {
         "MaTT": Date.now(), // Gán MaTT theo giá trị mong muốn
         "MaVD": route.params.MaVD, // Gán MaVD theo giá trị mong muốn
@@ -104,7 +114,7 @@ export default function Detail() {
           const newData = [...prevDatas, newDisLikeData];
           return newData;
         });
-        
+
         setLikeDatas(prevDatas => {
           const newData = prevDatas.filter(data => data.Username !== user);
           return newData;
@@ -123,17 +133,15 @@ export default function Detail() {
         });
       }
     }
-    else
-    {
+    else {
       ShowToast('error', 'Thông báo', 'Bạn cần đăng nhập để dislike video này!');
     }
   };
 
-  const saveHandler = async() => {
-    if(user != '')
-    {
+  const saveHandler = async () => {
+    if (user != '') {
       const existingSaveIndex = savedatas.findIndex((data) => data.Username === user);
-      
+
       const newSaveData = {
         "MaTT": Date.now(), // Gán MaTT theo giá trị mong muốn
         "MaVD": route.params.MaVD, // Gán MaVD theo giá trị mong muốn
@@ -150,11 +158,55 @@ export default function Detail() {
           return newData;
         });
         ShowToast('success', 'Thông báo', 'Lưu video thành công!');
-      }else{
+      } else {
         ShowToast('error', 'Thông báo', 'Thất bại, bạn đã lưu video này rồi!');
       }
     }
   }
+
+  const ListHeaderCompoment = () => (
+    <View>
+      <View style={styles.video_detail_container}>
+        <Text style={styles.video_detail_title}>{route.params.TenVD}</Text>
+        <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{route.params.LuotXem} {route.params.LuotXem <= 1 ? 'View' : 'Views'} - Đăng lúc: {formatTimestamp(route.params.PostTime)}</Text>
+        <View style={{ paddingTop: 10, flexDirection: 'row' }}>
+          <Image style={{ width: 30, height: 30, borderRadius: 100, borderWidth: 1, borderColor: '#edf0ef' }} source={require('../assets/avatar.jpg')} />
+          <View style={{ width: '90%', paddingLeft: 10 }}><Text style={{ fontWeight: '600', fontSize: 18 }}>{route.params.Username}</Text></View>
+        </View>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderColor: '#edf0ef' }}>
+        <View style={{ flexDirection: 'row', padding: 10 }}>
+          <TouchableOpacity onPress={() => likeHandler()}>
+            <View style={styles.category}>
+              <Image style={{ width: 30, height: 30 }} source={require('../assets/YTB/like.png')} />
+              <Text>{likedatas.length}</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => disLikeHandler()}>
+            <View style={{ paddingLeft: 10 }}>
+              <View style={styles.category}>
+                <Image style={{ width: 30, height: 30 }} source={require('../assets/YTB/dislike.png')} />
+                <Text>{disLikedatas.length}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+        {user != ''
+          ? user != route.params.Username
+            ? <View style={{ padding: 10 }}>
+              <TouchableOpacity onPress={() => saveHandler()}>
+                <View style={[styles.category]}>
+                  <Text style={{ fontWeight: 'bold' }}>Lưu Video</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            : null
+          : null
+        }
+      </View>
+      <CommentModal user={user} MaVD={route.params.MaVD} commentdatas={commentdatas} setCommentDatas={setCommentDatas} />
+    </View>
+  )
 
   useEffect(() => {
     handlerView(route.params.MaVD);
@@ -164,70 +216,33 @@ export default function Detail() {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <StatusBar backgroundColor='black' barStyle='light-content' />
         {videoLoad == true
-        ? <View style={{position: 'absolute', width: windowWidth, height: windowHeight * 0.3, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center'}}>
+          ? <View style={{ position: 'absolute', width: windowWidth, height: windowHeight * 0.3, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size={'large'} color={'red'} />
           </View>
-        : null
+          : null
         }
-        <Video
-        ref={videoRef}
-        style={{ width: windowWidth, height: windowHeight * 0.3 }}
-        source={{
-          uri: route.params.URL
-        }}
-        useNativeControls
-        resizeMode="stretch"
-        shouldPlay
-        isLooping
-        onFullscreenUpdate={FullscreenHandler}
-        onReadyForDisplay={() => setVidaoLoad(false)}
-        />
-        <View style={styles.video_detail_container}>
-          <Text style={styles.video_detail_title}>{route.params.TenVD}</Text>
-          <Text style={{ fontWeight: '600', color: '#9E9E9E' }}>{route.params.LuotXem} {route.params.LuotXem <= 1 ? 'View' : 'Views'} - {formatTimestamp(route.params.PostTime)}</Text>
-          <View style={{ paddingTop: 10, flexDirection: 'row' }}>
-          <Image style={{ width: 30, height: 30, borderRadius: 100, borderWidth: 1, borderColor: '#edf0ef' }} source={require('../assets/avatar.jpg')} />
-            <View style={{width: '90%', paddingLeft: 10 }}><Text style={{ fontWeight: '600', fontSize: 18 }}>{route.params.Username}</Text></View>
-          </View>
-        </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderColor: '#edf0ef' }}>
-          <View style={{ flexDirection: 'row', padding: 10}}>
-            <TouchableOpacity onPress={() => likeHandler()}>
-              <View style={styles.category}>
-                <Image style={{ width: 30, height: 30 }} source={require('../assets/YTB/like.png')} />
-                <Text>{likedatas.length}</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => disLikeHandler()}>
-              <View style={{ paddingLeft: 10 }}>
-                <View style={styles.category}>
-                  <Image style={{ width: 30, height: 30 }} source={require('../assets/YTB/dislike.png')} />
-                  <Text>{disLikedatas.length}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-          {user != ''
-          ? user != route.params.Username
-          ? <View style={{padding: 10}}>
-              <TouchableOpacity onPress={() => saveHandler()}>
-                <View style={[styles.category]}>
-                  <Text style={{fontWeight: 'bold'}}>Lưu Video</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          : null
-          : null
-          }
-        </View>
-        <CommentModal user={user} MaVD={route.params.MaVD} commentdatas={commentdatas} setCommentDatas={setCommentDatas}/>
-        <VideoList datas={datas}  screen={'Detail'}/>
+        <TouchableOpacity activeOpacity={1} onPress={() => handleDoubleTap()}>
+          <Video
+            ref={videoRef}
+            style={{ width: windowWidth, height: moreSpace == false ? windowHeight * 0.3 : windowHeight * 0.35 }}
+            source={{
+              uri: route.params.URL
+            }}
+            useNativeControls
+            resizeMode="stretch"
+            shouldPlay
+            isLooping
+            onFullscreenUpdate={FullscreenHandler}
+            onReadyForDisplay={() => setVidaoLoad(false)}
+          />
+        </TouchableOpacity>
+        <VideoList datas={datas} screen={'Detail'} ListHeader={ListHeaderCompoment} />
       </View>
-      <Toast/>
+      <Toast />
     </SafeAreaView>
   )
 }
